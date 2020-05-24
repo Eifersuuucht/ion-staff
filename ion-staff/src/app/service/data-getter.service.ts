@@ -19,6 +19,13 @@ export class DataGetterService {
     }
   ];
 
+  private userName = '';
+  private users = [
+      'Ivan',
+      'Dmytro',
+      'Olga'
+  ]
+
   constructor() { }
 
   getDepartments(): Observable<Department[]> {
@@ -39,5 +46,17 @@ export class DataGetterService {
     const departmentToDelete = this.departments.find(department => department.id === id);
     const indexToDelete = this.departments.indexOf(departmentToDelete);
     this.departments.splice(indexToDelete, 1);
+  }
+
+  getUser() {
+    return this.userName;
+  }
+
+  setUser(name: string) {
+    this.userName = name;
+  }
+
+  userExists(name: string): boolean {
+    return this.users.indexOf(name) !== -1;
   }
 }

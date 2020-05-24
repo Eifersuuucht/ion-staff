@@ -9,12 +9,14 @@ import {DataGetterService} from "../service/data-getter.service";
 })
 export class HomePage implements OnInit{
   departments: Department[];
+  userName: string;
   showNew = false;
   showEdit = -1;
 
   constructor(private dataGetterService: DataGetterService) {}
 
   ngOnInit(): void {
+    this.userName = this.dataGetterService.getUser();
     this.dataGetterService.getDepartments().subscribe(
         (departments) => {
           this.departments = departments;
