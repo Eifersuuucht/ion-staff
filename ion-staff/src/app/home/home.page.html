@@ -41,9 +41,19 @@
           <ion-label>Department #{{department.id}}</ion-label>
           <ion-note slot="end">{{department.name}}</ion-note>
         </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="secondary"
+                           routerLink="/workers/{{department.id}}" r
+                           outerDirection="forward">
+            <ion-icon name="reorder"></ion-icon>
+            Workers
+          </ion-item-option>
+        </ion-item-options>
       </ion-item-sliding>
       <app-department *ngIf="showEdit==department.id" [isNew]="false"
-                      [department]="department"></app-department>
+                      [department]="department"
+                      (departmentEdited)="editDepartment($event)"
+                      (editingDepartmentCanceled)="showEdit=-1"></app-department>
     </div>
   </ion-list>
 </ion-content>

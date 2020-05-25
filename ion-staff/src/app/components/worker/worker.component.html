@@ -5,13 +5,18 @@
 
   <ion-card-content>
     <ion-item>
-      <ion-label position="floating">Name</ion-label>
-      <ion-input type="text" [(ngModel)]="department.name" name="name"></ion-input>
+      <ion-label position="floating">Last name</ion-label>
+      <ion-input type="text" [(ngModel)]="worker.lastName" name="lastName"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label position="floating">Available Vacancy Number</ion-label>
-      <ion-input type="number" [(ngModel)]="department.vacancyNumber" name="vacancyNumber"></ion-input>
+      <ion-label position="floating">Total Experience in month</ion-label>
+      <ion-input type="number" [(ngModel)]="worker.experienceInMonth" name="experienceInMonth"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Position</ion-label>
+      <ion-input type="text" [(ngModel)]="worker.position" name="position"></ion-input>
     </ion-item>
 
     <ion-button *ngIf="isNew" color="primary" (click)="addNew()">
@@ -27,5 +32,7 @@
     <ion-button *ngIf="!isNew" color="danger" class="ion-float-right" (click)="cancelEditing()">
       <ion-icon slot="start" name="close"></ion-icon>Cancel
     </ion-button>
+
+
   </ion-card-content>
 </ion-card>

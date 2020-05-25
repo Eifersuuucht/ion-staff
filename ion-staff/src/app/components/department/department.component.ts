@@ -11,6 +11,8 @@ export class DepartmentComponent implements OnInit {
   @Input() isNew: boolean;
   @Output() departmentAdded = new EventEmitter();
   @Output() addingDepartmentCanceled = new EventEmitter();
+  @Output() departmentEdited = new EventEmitter();
+  @Output() editingDepartmentCanceled = new EventEmitter();
   title: string;
 
   constructor() { }
@@ -35,6 +37,18 @@ export class DepartmentComponent implements OnInit {
   cancelAdding() {
     if(this.isNew) {
       this.addingDepartmentCanceled.emit();
+    }
+  }
+
+  edit() {
+    if(!this.isNew) {
+      this.departmentEdited.emit(this.department);
+    }
+  }
+
+  cancelEditing() {
+    if(!this.isNew) {
+      this.editingDepartmentCanceled.emit();
     }
   }
 }
