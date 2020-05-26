@@ -2,23 +2,15 @@ import { Injectable } from '@angular/core';
 import {Department} from "../models/department.model";
 import {Observable, Subject} from "rxjs";
 import {Worker} from "../models/worker.model";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataGetterService {
-  private departments: Department[] = [
-    {
-      id: 1,
-      name: 'Engineering',
-      vacancyNumber: 15
-    },
-    {
-      id: 2,
-      name: 'Human Resource',
-      vacancyNumber: 3
-    }
-  ];
+  baseUrl = 'https://localhost:44378/api/';
+
+  private departments: Department[];
 
   private userName = '';
   private users = [
@@ -58,82 +50,100 @@ export class DataGetterService {
     }
   ];
 
-  workersChanged = new Subject<Worker[]>();
+  workersChanged = new Subject<Observable<Worker[]>>();
+  departmentsChanged = new Subject<Observable<Department[]>>();
+  LoggedIn = new Subject<boolean>();
   lastDepartmentId: number;
+  isLoggedIn: boolean;
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
-  getDepartments(): Observable<Department[]> {
-    return new Observable<Department[]>(
-        subscriber => {
-          subscriber.next(this.departments);
-          subscriber.complete();
-        }
-    );
+  getDepartments() {
+    return this.httpClient.get<Department[]>(this.baseUrl + 'departments', {headers: this.getAuthHeaders()});
   }
 
   addDepartment(department){
-    department.id = this.departments.length + 1;
-    this.departments.push(department);
+    return this.httpClient.post<any>(this.baseUrl + 'departments', {
+      name: department.name,
+      vacancy: department.vacancyNumber
+    }, {headers: this.getAuthHeaders()}).subscribe(() => {
+      this.departmentsChanged.next(this.getDepartments());
+    });
   }
 
   updateDepartment(department: Department){
-    const indexToChange = this.departments.indexOf(department);
-    this.departments[indexToChange] = department;
+    return this.httpClient.put<any>(this.baseUrl + 'departments/' + department.id, department, {headers: this.getAuthHeaders()})
+        .subscribe(() => {
+      this.departmentsChanged.next(this.getDepartments());
+    });
   }
 
   deleteDepartment(id: number){
-    const departmentToDelete = this.departments.find(department => department.id === id);
-    const indexToDelete = this.departments.indexOf(departmentToDelete);
-    this.departments.splice(indexToDelete, 1);
+    return this.httpClient.delete<any>(this.baseUrl + 'departments/' + id, {headers: this.getAuthHeaders()})
+        .subscribe(() => {
+          this.departmentsChanged.next(this.getDepartments());
+        });
   }
 
-  getWorkers(departmentId: number): Observable<Worker[]>{
+  getWorkers(departmentId: number){
     this.lastDepartmentId = departmentId;
-    return new Observable<Worker[]>(
-        subscriber => {
-          subscriber.next(this.workers.filter(elem => {
-            return elem.departmentId === departmentId;
-          }));
-          subscriber.complete();
-        }
-    );
+    return this.httpClient.get<Worker[]>(this.baseUrl + 'workers/department/' + departmentId, {headers: this.getAuthHeaders()});
   }
 
   addWorker(worker: Worker){
-    worker.id = this.workers.length + 1;
-    this.workers.push(worker);
-    this.workersChanged.next(this.workers.filter(elem => {
-      return elem.departmentId === this.lastDepartmentId;
-    }));
+    return this.httpClient.post<any>(this.baseUrl + 'workers', {
+      lastName: worker.lastName,
+      experienceInMonth: worker.experienceInMonth,
+      position: worker.position,
+      departmentId: worker.departmentId
+    }, {headers: this.getAuthHeaders()}).subscribe(() => {
+      this.workersChanged.next(this.getWorkers(this.lastDepartmentId));
+    });
   }
 
   updateWorker(worker: Worker){
-    const indexToChange = this.workers.indexOf(worker);
-    this.workers[indexToChange] = worker;
-    this.workersChanged.next(this.workers.filter(elem => {
-      return elem.departmentId === this.lastDepartmentId;
-    }));
+    return this.httpClient.put<any>(this.baseUrl + 'workers/' + worker.id, worker, {headers: this.getAuthHeaders()})
+        .subscribe(() => {
+          this.workersChanged.next(this.getWorkers(this.lastDepartmentId));
+        });
   }
 
   deleteWorker(id: number){
-    const workerToDelete = this.workers.find(worker => worker.id === id);
-    const indexToDelete = this.workers.indexOf(workerToDelete);
-    this.workers.splice(indexToDelete, 1);
-    this.workersChanged.next(this.workers.filter(elem => {
-      return elem.departmentId === this.lastDepartmentId;
-    }));
+    return this.httpClient.delete<any>(this.baseUrl + 'workers/' + id, {headers: this.getAuthHeaders()})
+        .subscribe(() => {
+          this.workersChanged.next(this.getWorkers(this.lastDepartmentId));
+        });
   }
 
-  getUser() {
+  IsLoggedIn() {
+    return this.isLoggedIn;
+  }
+
+  getUser(): string {
     return this.userName;
   }
 
-  setUser(name: string) {
-    this.userName = name;
+  login(username: string, password: string){
+    this.httpClient.post<any>(this.baseUrl + 'auth/login', {
+      login: username,
+      password: password
+    }).subscribe((data) => {
+      localStorage.setItem('authToken', data.authToken);
+      this.isLoggedIn = true;
+      this.userName = data.username;
+      this.LoggedIn.next(true);
+    }, (error) => {
+      this.isLoggedIn = false;
+      this.LoggedIn.next(false);
+    });
   }
 
-  userExists(name: string): boolean {
-    return this.users.indexOf(name) !== -1;
+  getAuthHeaders(): HttpHeaders{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': "Bearer " + localStorage.getItem('authToken')
+    })
+
+    return headers;
   }
 }

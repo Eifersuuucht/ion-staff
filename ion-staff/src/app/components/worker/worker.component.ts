@@ -46,7 +46,7 @@ export class WorkerComponent implements OnInit {
 
   edit() {
     if(!this.isNew) {
-      this.workerEdited.emit();
+      this.workerEdited.emit(this.worker);
     }
   }
 

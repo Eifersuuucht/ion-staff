@@ -1,30 +1,41 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {DataGetterService} from "../service/data-getter.service";
 import {AlertController} from "@ionic/angular";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
   userName: string;
+  password: string;
+  subscription: Subscription
 
   constructor(private router: Router,
               private dataGetterService: DataGetterService,
               public alertController: AlertController) { }
 
-  ngOnInit() {
-  }
+  ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
 
-    login() {
-      if(this.dataGetterService.userExists(this.userName)){
-        this.dataGetterService.setUser(this.userName);
-        this.router.navigate(['/home']);
-      } else {
-        this.userNotExistAlert();
-      }
+  ngOnInit() {
+    this.subscription = this.dataGetterService.LoggedIn.subscribe(
+        isLoggedIn => {
+          if(isLoggedIn) {
+            this.router.navigate(['/home']);
+          } else {
+            this.userNotExistAlert();
+          }
+        });
+    }
+
+
+    login(isLoggedIn: boolean) {
+      this.dataGetterService.login(this.userName, this.password)
     }
 
     async userNotExistAlert() {

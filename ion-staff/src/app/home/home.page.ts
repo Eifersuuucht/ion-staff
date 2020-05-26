@@ -1,19 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Department} from "../models/department.model";
 import {DataGetterService} from "../service/data-getter.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit{
+export class HomePage implements OnInit, OnDestroy{
   departments: Department[];
   userName: string;
   showNew = false;
   showEdit = -1;
   extraData: string;
+  subscription: Subscription;
 
   constructor(private dataGetterService: DataGetterService,
               private router: Router,
@@ -27,6 +29,15 @@ export class HomePage implements OnInit{
           this.departments = departments;
         }
     );
+    this.subscription = this.dataGetterService.departmentsChanged.subscribe(
+        departmentsObs => {
+          departmentsObs.subscribe(
+              departments => {
+                this.departments = departments;
+              }
+          );
+        }
+    )
   }
 
   getData() {
@@ -49,5 +60,9 @@ export class HomePage implements OnInit{
   editDepartment(department: Department) {
     this.dataGetterService.updateDepartment(department);
     this.showEdit = -1;
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }

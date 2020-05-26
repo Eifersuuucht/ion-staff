@@ -21,7 +21,11 @@
                     (workerAdded)="addWorker($event)"
                     (addingWorkerCanceled)="showNew=false"
                     ></app-worker>
-
+    <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
+      <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh"
+                             refreshingSpinner="circles" refreshingText="Refreshing...">
+      </ion-refresher-content>
+    </ion-refresher>
     <div *ngFor="let worker of workers;">
       <ion-item-sliding>
         <ion-item-options side="start">
@@ -44,4 +48,7 @@
                       (editingWorkerCanceled)="showEdit=-1"></app-worker>
     </div>
   </ion-list>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="addData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
