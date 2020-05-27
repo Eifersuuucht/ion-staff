@@ -11,13 +11,13 @@
   <ion-list>
     <ion-list-header>
       <ion-label>Departments</ion-label>
-      <ion-button shape="round" fill="outline"
+      <ion-button *ngIf="hasRights('WorkerWriter')" shape="round" fill="outline"
                   color="success" (click)="add()">
         <ion-icon slot="start" name="add"></ion-icon>Add
       </ion-button>
     </ion-list-header>
 
-    <app-worker *ngIf="showNew" [isNew]="true"
+    <app-worker *ngIf="showNew && hasRights('WorkerWriter')" [isNew]="true"
                     (workerAdded)="addWorker($event)"
                     (addingWorkerCanceled)="showNew=false"
                     ></app-worker>
@@ -28,7 +28,7 @@
     </ion-refresher>
     <div *ngFor="let worker of workers;">
       <ion-item-sliding>
-        <ion-item-options side="start">
+        <ion-item-options *ngIf="hasRights('WorkerWriter')" side="start">
           <ion-item-option color="primary" (click)="showEdit=worker.id">
             <ion-icon name="create"></ion-icon>Change
           </ion-item-option>
@@ -42,7 +42,7 @@
           <ion-note slot="end">{{worker.position}}</ion-note>
         </ion-item>
       </ion-item-sliding>
-      <app-worker *ngIf="showEdit==worker.id" [isNew]="false"
+      <app-worker *ngIf="showEdit==worker.id && hasRights('WorkerWriter')" [isNew]="false"
                       [worker]="worker"
                       (workerEdited)="editWorker($event)"
                       (editingWorkerCanceled)="showEdit=-1"></app-worker>

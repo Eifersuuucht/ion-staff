@@ -34,7 +34,7 @@ export class LoginPage implements OnInit, OnDestroy {
     }
 
 
-    login(isLoggedIn: boolean) {
+    login() {
       this.dataGetterService.login(this.userName, this.password)
     }
 

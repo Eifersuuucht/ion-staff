@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Company's Departments</ion-title>
-    <ion-button routerLink="/register" color="primary" slot="end">
-      Register
+    <ion-button routerLink="/login" color="primary" slot="end">
+      Log In
     </ion-button>
   </ion-toolbar>
 </ion-header>
@@ -12,7 +12,7 @@
     <ion-row color="primary">
       <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
         <div text-center>
-          <h3>LOGIN</h3>
+          <h3>REGISTER</h3>
         </div>
 
         <ion-item>
@@ -24,8 +24,8 @@
           <ion-input type="password" name="password" [(ngModel)]="password"></ion-input>
         </ion-item>
 
-        <ion-button color="primary" (click)="login()">
-          <ion-icon slot="start" name="log-in"></ion-icon>Log in
+        <ion-button color="primary" (click)="register()">
+          <ion-icon slot="start" name="add"></ion-icon>Register
         </ion-button>
       </ion-col>
     </ion-row>

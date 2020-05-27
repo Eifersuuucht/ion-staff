@@ -3,6 +3,7 @@ import {Department} from "../models/department.model";
 import {DataGetterService} from "../service/data-getter.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
+import {Role} from "../models/role.model";
 
 @Component({
   selector: 'app-home',
@@ -37,7 +38,11 @@ export class HomePage implements OnInit, OnDestroy{
               }
           );
         }
-    )
+    );
+  }
+
+  hasRights(roleName: string){
+    return this.dataGetterService.hasRights(roleName);
   }
 
   getData() {

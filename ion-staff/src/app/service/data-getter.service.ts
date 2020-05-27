@@ -3,6 +3,9 @@ import {Department} from "../models/department.model";
 import {Observable, Subject} from "rxjs";
 import {Worker} from "../models/worker.model";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {User} from "../models/user.model";
+import {map} from "rxjs/operators";
+import {Role} from "../models/role.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,46 +16,16 @@ export class DataGetterService {
   private departments: Department[];
 
   private userName = '';
-  private users = [
-      'Ivan',
-      'Dmytro',
-      'Olga'
-  ]
+  private userId = -1;
 
-  private workers: Worker[] = [
-    {
-      id: 1,
-      lastName: 'Nitro',
-      experienceInMonth: 15,
-      position: 'Director',
-      departmentId: 2
-    },
-    {
-      id: 2,
-      lastName: 'Laus',
-      experienceInMonth: 2,
-      position: 'Director',
-      departmentId: 1
-    },
-    {
-      id: 3,
-      lastName: 'Skolnik',
-      experienceInMonth: 33,
-      position: 'Software Engineer',
-      departmentId: 1
-    },
-    {
-      id: 4,
-      lastName: 'Nash',
-      experienceInMonth: 11,
-      position: 'HR Manager',
-      departmentId: 2
-    }
-  ];
+  private workers: Worker[];
+  private roles: Role[];
 
   workersChanged = new Subject<Observable<Worker[]>>();
   departmentsChanged = new Subject<Observable<Department[]>>();
+  usersChanged = new Subject<Observable<User[]>>();
   LoggedIn = new Subject<boolean>();
+  Registered = new Subject<boolean>()
   lastDepartmentId: number;
   isLoggedIn: boolean;
 
@@ -123,14 +96,35 @@ export class DataGetterService {
     return this.userName;
   }
 
+  getUsers() {
+    return this.httpClient.get<User[]>(this.baseUrl + 'users', {headers: this.getAuthHeaders()})
+        .pipe(map(
+            (res: Array<User>) => res.filter(
+                u => u.username != this.userName
+            )
+        ));
+  }
+
+  updateUserRoles(user: User) {
+    return this.httpClient.put<any>(this.baseUrl + 'roles/users/' + user.id,
+        {
+          roles :user.roles.filter(u => u.isChecked).map(u => u.name)
+        }, {headers: this.getAuthHeaders()})
+        .subscribe(() => {
+          this.usersChanged.next(this.getUsers());
+        });
+  }
+
   login(username: string, password: string){
     this.httpClient.post<any>(this.baseUrl + 'auth/login', {
       login: username,
       password: password
-    }).subscribe((data) => {
+    }).subscribe(async (data) => {
       localStorage.setItem('authToken', data.authToken);
       this.isLoggedIn = true;
       this.userName = data.username;
+      this.userId = data.userId;
+      this.roles = data.roles;
       this.LoggedIn.next(true);
     }, (error) => {
       this.isLoggedIn = false;
@@ -145,5 +139,20 @@ export class DataGetterService {
     })
 
     return headers;
+  }
+
+  register(userName: string, password: string) {
+    this.httpClient.post<any>(this.baseUrl + 'users', {
+      login: userName,
+      password: password
+    }).subscribe((data) => {
+      this.Registered.next(true);
+    }, (error) => {
+      this.Registered.next(false);
+    });
+  }
+
+  hasRights(roleName: string){
+    return this.roles.find(role => role.name === roleName).isChecked;
   }
 }

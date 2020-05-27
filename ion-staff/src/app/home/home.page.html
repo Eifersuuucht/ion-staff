@@ -4,6 +4,9 @@
       Company's Departments
     </ion-title>
     <ion-buttons slot="secondary">
+      <ion-button *ngIf="hasRights('UserReader')" routerLink="/admin-panel" routerDirection="forward">
+        <ion-icon slot="icon-only" name="people-outline"></ion-icon>
+      </ion-button>
       ({{userName}})
       <ion-button routerLink="/login" routerDirection="root">
         <ion-icon slot="icon-only" name="log-out"></ion-icon>
@@ -16,19 +19,19 @@
   <ion-list>
     <ion-list-header>
       <ion-label>Departments</ion-label>
-      <ion-button shape="round" fill="outline"
+      <ion-button *ngIf="hasRights('DepartmentWriter')" shape="round" fill="outline"
       color="success" (click)="add()">
         <ion-icon slot="start" name="add"></ion-icon>Add
       </ion-button>
     </ion-list-header>
 
-    <app-department *ngIf="showNew" [isNew]="true"
+    <app-department *ngIf="showNew && hasRights('DepartmentWriter')" [isNew]="true"
       (departmentAdded)="addDepartment($event)"
       (addingDepartmentCanceled)="showNew=false"></app-department>
 
     <div *ngFor="let department of departments;">
       <ion-item-sliding>
-        <ion-item-options side="start">
+        <ion-item-options *ngIf="hasRights('DepartmentWriter')" side="start">
           <ion-item-option color="primary" (click)="showEdit=department.id">
             <ion-icon name="create"></ion-icon>Change
           </ion-item-option>
@@ -41,16 +44,16 @@
           <ion-label>Department #{{department.id}}</ion-label>
           <ion-note slot="end">{{department.name}}</ion-note>
         </ion-item>
-        <ion-item-options side="end">
+        <ion-item-options *ngIf="hasRights('WorkerReader')" side="end">
           <ion-item-option color="secondary"
-                           routerLink="/workers/{{department.id}}" r
-                           outerDirection="forward">
+                           routerLink="/workers/{{department.id}}"
+                           routerDirection="forward">
             <ion-icon name="reorder"></ion-icon>
             Workers
           </ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
-      <app-department *ngIf="showEdit==department.id" [isNew]="false"
+      <app-department *ngIf="showEdit==department.id && hasRights('DepartmentWriter')" [isNew]="false"
                       [department]="department"
                       (departmentEdited)="editDepartment($event)"
                       (editingDepartmentCanceled)="showEdit=-1"></app-department>

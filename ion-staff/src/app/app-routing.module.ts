@@ -25,7 +25,17 @@ const routes: Routes = [
   {
     path: 'http-test',
     loadChildren: () => import('./http-test/http-test.module').then( m => m.HttpTestPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'admin-panel',
+    loadChildren: () => import('./admin-panel/admin-panel.module').then( m => m.AdminPanelPageModule),
+    canActivate: [AuthGuard]
   }
+
 
 ];
 
