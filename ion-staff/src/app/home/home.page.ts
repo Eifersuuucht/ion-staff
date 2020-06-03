@@ -4,6 +4,7 @@ import {DataGetterService} from "../service/data-getter.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {Role} from "../models/role.model";
+import {FireDataGetterService} from "../service/fire-data-getter.service";
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,7 @@ import {Role} from "../models/role.model";
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, OnDestroy{
-  departments: Department[];
+  departments: any[];
   userName: string;
   showNew = false;
   showEdit = -1;
@@ -20,12 +21,13 @@ export class HomePage implements OnInit, OnDestroy{
 
   constructor(private dataGetterService: DataGetterService,
               private router: Router,
-              private route: ActivatedRoute) {}
+              private route: ActivatedRoute,
+              private fireDataGetterService: FireDataGetterService) {}
 
   ngOnInit(): void {
     this.userName = this.dataGetterService.getUser();
     this.extraData = this.route.snapshot.paramMap.get('data');
-    this.dataGetterService.getDepartments().subscribe(
+    this.fireDataGetterService.getDepartments().subscribe(
         (departments) => {
           this.departments = departments;
         }
@@ -53,17 +55,21 @@ export class HomePage implements OnInit, OnDestroy{
     this.showNew = true;
   }
 
-  delete(id: number) {
-    this.dataGetterService.deleteDepartment(id);
+  delete(department: Department) {
+    this.fireDataGetterService.deleteDepartment(department);
+    //this.dataGetterService.deleteDepartment(id);
   }
 
   addDepartment(department: Department) {
-    this.dataGetterService.addDepartment(department);
+    department.id = this.departments.length + 1;
+    this.fireDataGetterService.addDepartment(department);
+    //this.dataGetterService.addDepartment(department);
     this.showNew = false;
   }
 
   editDepartment(department: Department) {
-    this.dataGetterService.updateDepartment(department);
+    this.fireDataGetterService.editDepartment(department);
+    // this.dataGetterService.updateDepartment(department);
     this.showEdit = -1;
   }
 

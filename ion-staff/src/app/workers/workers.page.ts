@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {DataGetterService} from "../service/data-getter.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Worker} from "../models/worker.model";
 import {Subscription} from "rxjs";
 import {map} from "rxjs/operators";
+import {FireDataGetterService} from "../service/fire-data-getter.service";
 
 @Component({
   selector: 'app-workers',
@@ -12,7 +13,8 @@ import {map} from "rxjs/operators";
 })
 export class WorkersPage implements OnInit {
   departmentId: number;
-  workers: Worker[];
+  departmentDocId: string;
+  workers: any[];
   showNew = false;
   showEdit = -1;
   subscription: Subscription;
@@ -20,12 +22,16 @@ export class WorkersPage implements OnInit {
   private workerStep: number = 10;
 
   constructor(private dataGetterService: DataGetterService,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private router: Router,
+              private fireDataGetterService: FireDataGetterService) { }
 
   ngOnInit() {
+    this.departmentDocId = this.route.snapshot.queryParamMap.get('id');
     this.departmentId = +this.route.snapshot.paramMap.get('departmentId');
-    this.dataGetterService.getWorkers(this.departmentId).subscribe(
+    this.fireDataGetterService.getWorkers(this.departmentDocId).subscribe(
         workers => {
+            console.log(workers);
           this.workers = workers;
         }
     )

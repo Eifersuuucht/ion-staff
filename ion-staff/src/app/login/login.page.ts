@@ -3,6 +3,7 @@ import {Router} from "@angular/router";
 import {DataGetterService} from "../service/data-getter.service";
 import {AlertController} from "@ionic/angular";
 import {Subscription} from "rxjs";
+import {FireDataGetterService} from "../service/fire-data-getter.service";
 
 @Component({
   selector: 'app-login',

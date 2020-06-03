@@ -35,7 +35,7 @@
           <ion-item-option color="primary" (click)="showEdit=department.id">
             <ion-icon name="create"></ion-icon>Change
           </ion-item-option>
-          <ion-item-option color="danger" (click)="delete(department.id)">
+          <ion-item-option color="danger" (click)="delete(department)">
             <ion-icon name="trash"></ion-icon>Delete
           </ion-item-option>
         </ion-item-options>
@@ -47,6 +47,7 @@
         <ion-item-options *ngIf="hasRights('WorkerReader')" side="end">
           <ion-item-option color="secondary"
                            routerLink="/workers/{{department.id}}"
+                           [queryParams]="{id: department.docId}"
                            routerDirection="forward">
             <ion-icon name="reorder"></ion-icon>
             Workers

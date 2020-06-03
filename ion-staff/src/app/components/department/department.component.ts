@@ -20,6 +20,7 @@ export class DepartmentComponent implements OnInit {
   ngOnInit() {
     if(this.isNew) {
       this.department = {
+        docId: null,
         id: null,
         name: '',
         vacancyNumber: null
