@@ -25,27 +25,27 @@ export class HomePage implements OnInit, OnDestroy{
               private fireDataGetterService: FireDataGetterService) {}
 
   ngOnInit(): void {
-    this.userName = this.dataGetterService.getUser();
+    this.userName = this.fireDataGetterService.getUser();
     this.extraData = this.route.snapshot.paramMap.get('data');
     this.fireDataGetterService.getDepartments().subscribe(
         (departments) => {
           this.departments = departments;
         }
     );
-    this.subscription = this.dataGetterService.departmentsChanged.subscribe(
-        departmentsObs => {
-          departmentsObs.subscribe(
-              departments => {
-                this.departments = departments;
-              }
-          );
-        }
-    );
+    // this.subscription = this.dataGetterService.departmentsChanged.subscribe(
+    //     departmentsObs => {
+    //       departmentsObs.subscribe(
+    //           departments => {
+    //             this.departments = departments;
+    //           }
+    //       );
+    //     }
+    // );
   }
 
-  hasRights(roleName: string){
-    return this.dataGetterService.hasRights(roleName);
-  }
+  // hasRights(roleName: string){
+  //   return this.dataGetterService.hasRights(roleName);
+  // }
 
   getData() {
     this.router.navigate(['/data-sender', {data: this.extraData}]);

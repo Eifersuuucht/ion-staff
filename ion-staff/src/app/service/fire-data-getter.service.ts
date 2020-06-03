@@ -4,6 +4,7 @@ import {Department} from "../models/department.model";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {validateConstructorDependencies} from "@angular/compiler-cli/src/ngtsc/annotations/src/util";
 import {map} from "rxjs/operators";
+import {AngularFireAuth} from "@angular/fire/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,10 @@ export class FireDataGetterService {
     departments: Observable<Department[]>
     departmentsLength: number;
 
-  constructor(private readonly angularFirestore: AngularFirestore) {
+    private userName = '';
+
+  constructor(private readonly angularFirestore: AngularFirestore,
+              private angularFireAuth: AngularFireAuth) {
     const departmentsCollection = angularFirestore.collection('departments');
     this.departments = departmentsCollection.snapshotChanges().pipe(
         map(actions => actions.map(a => {
@@ -60,5 +64,20 @@ export class FireDataGetterService {
           .doc('departments/' + id)
           .collection('workers')
           .valueChanges();
+  }
+
+  checkUser(user){
+      return this.angularFireAuth.signInWithEmailAndPassword(
+          user.userName,
+          user.passwd
+      );
+  }
+
+  getUser() {
+      return this.userName;
+  }
+
+  setUser(name:string){
+      this.userName = name;
   }
 }

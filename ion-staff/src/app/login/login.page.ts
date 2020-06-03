@@ -17,26 +17,39 @@ export class LoginPage implements OnInit, OnDestroy {
 
   constructor(private router: Router,
               private dataGetterService: DataGetterService,
-              public alertController: AlertController) { }
+              public alertController: AlertController,
+              private fireDataGetterService: FireDataGetterService) { }
 
   ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
 
   ngOnInit() {
-    this.subscription = this.dataGetterService.LoggedIn.subscribe(
-        isLoggedIn => {
-          if(isLoggedIn) {
-            this.router.navigate(['/home']);
-          } else {
-            this.userNotExistAlert();
-          }
-        });
+    // this.subscription = this.dataGetterService.LoggedIn.subscribe(
+    //     isLoggedIn => {
+    //       if(isLoggedIn) {
+    //         this.router.navigate(['/home']);
+    //       } else {
+    //         this.userNotExistAlert();
+    //       }
+    //     });
     }
 
 
     login() {
-      this.dataGetterService.login(this.userName, this.password)
+      this.fireDataGetterService.checkUser({
+            userName: this.userName,
+            passwd: this.password
+      }).then(
+          res => {
+            this.fireDataGetterService.setUser(this.userName);
+            this.router.navigate(['/home']);
+          },
+          err => {
+            this.userNotExistAlert();
+          }
+      )
+      // this.dataGetterService.login(this.userName, this.password)
     }
 
     async userNotExistAlert() {

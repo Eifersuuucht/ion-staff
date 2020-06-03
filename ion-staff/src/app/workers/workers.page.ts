@@ -89,7 +89,7 @@ export class WorkersPage implements OnInit {
         )
   }
 
-    hasRights(roleName: string){
-        return this.dataGetterService.hasRights(roleName);
-    }
+    // hasRights(roleName: string){
+    //     return this.dataGetterService.hasRights(roleName);
+    // }
 }

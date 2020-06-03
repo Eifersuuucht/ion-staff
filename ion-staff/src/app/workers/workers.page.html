@@ -17,6 +17,7 @@
 <!--      </ion-button>-->
     </ion-list-header>
 
+<!--    <app-worker *ngIf="showNew/ && hasRightshasRights('WorkerWriter')" [isNew]="true"-->
     <app-worker *ngIf="showNew && hasRights('WorkerWriter')" [isNew]="true"
                     (workerAdded)="addWorker($event)"
                     (addingWorkerCanceled)="showNew=false"
